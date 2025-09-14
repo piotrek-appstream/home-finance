@@ -7,12 +7,14 @@ import { uid } from "@/utils/money";
 import { Plus } from "lucide-react";
 import { MoneyInput } from "@/components/MoneyInput";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { DatePicker } from "@/components/DatePicker";
+import { formatYmd } from "@/utils/date";
 
 export function FuturePaymentForm({ onAdd }: { onAdd: (d: FuturePayment) => void }) {
   const [name, setName] = useState("");
   const [value, setValue] = useState<number>(0);
   const [currency, setCurrency] = useState<Currency>("PLN");
-  const [dueDate, setDueDate] = useState<string>(new Date().toISOString().slice(0, 10));
+  const [dueDate, setDueDate] = useState<string>(formatYmd(new Date()));
   const [recurrence, setRecurrence] = useState<FuturePayment["recurrence"]>("once");
 
   return (
@@ -26,7 +28,7 @@ export function FuturePaymentForm({ onAdd }: { onAdd: (d: FuturePayment) => void
       </Field>
 
       <Field label="Due Date">
-        <Input type="date" value={dueDate} onChange={(e) => setDueDate(e.target.value)} />
+        <DatePicker value={dueDate} onChange={setDueDate} />
       </Field>
 
       <Field label="Repeats">

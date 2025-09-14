@@ -3,7 +3,7 @@ import type { Currency, StoreState } from "@/types";
 import { totalInCurrency } from "@/utils/fx";
 import { fmtMoney } from "@/utils/money";
 import { Stat } from "@/components/Stat";
-import { monthsBetween } from "@/utils/date";
+import { monthsBetween, formatYmd } from "@/utils/date";
 
 export function SummaryTab({ store, displayCurrency }: { store: StoreState; displayCurrency: Currency }) {
   const totals = useMemo(() => {
@@ -27,7 +27,7 @@ export function SummaryTab({ store, displayCurrency }: { store: StoreState; disp
         for (let k = -1; k <= years; k++) {
           const y = startYear + k;
           const dt = new Date(y, m0 - 1, day);
-          const iso = dt.toISOString().slice(0, 10);
+          const iso = formatYmd(dt);
           const diff = monthsBetween(now, iso);
           if (diff >= 0 && diff <= 12) {
             upcoming.push({ ...d, dueDate: iso });

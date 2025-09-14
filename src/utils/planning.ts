@@ -1,6 +1,6 @@
 import type { Currency, Money, Plan, StoreState } from "@/types";
 import { convertMoney, FX_RATES_PLN, totalInCurrency } from "@/utils/fx";
-import { addMonths as addMonthsDate, monthsBetween } from "@/utils/date";
+import { addMonths as addMonthsDate, monthsBetween, formatYm, formatYmd } from "@/utils/date";
 
 export type FuturePaymentSim = {
   id: string;
@@ -68,7 +68,7 @@ export function simulatePlan(
 
   function addMonths(ym: { y: number; m0: number }, add: number): string {
     const d = new Date(ym.y, ym.m0 + add, 1);
-    return addMonthsDate(d, 0).toISOString().slice(0, 7);
+    return formatYm(addMonthsDate(d, 0));
   }
 
   function monthsBetweenNow(dateIso: string): number {
@@ -131,17 +131,17 @@ function expandFuturePayments(store: StoreState, horizonMonths: number) {
     }
     if (recur === "yearly") {
       const parts = d.dueDate.split("-").map(Number);
-      const m0 = parts[1];
+      const startYear = parts[0];
+      const month = parts[1];
       const day = parts[2];
-      const startYear = now.getFullYear();
-      const years = Math.ceil(horizonMonths / 12) + 1;
-      for (let k = -1; k <= years; k++) {
-        const y = startYear + k;
-        const dt = new Date(y, m0 - 1, day);
-        const iso = dt.toISOString().slice(0, 10);
+      const horizonEndYear = now.getFullYear() + Math.ceil(horizonMonths / 12) + 1;
+
+      for (let y = startYear; y <= horizonEndYear; y++) {
+        const dt = new Date(y, month - 1, day);
+        const iso = formatYmd(dt);
         const diff = monthsBetween(now, iso);
         if (diff >= 0 && diff <= horizonMonths) {
-          items.push({ id: `${d.id}#${iso.slice(0,7)}`, name: d.name, amount: d.amount, dueDate: iso });
+          items.push({ id: `${d.id}#${iso.slice(0, 7)}`, name: d.name, amount: d.amount, dueDate: iso });
         }
       }
     }

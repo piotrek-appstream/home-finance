@@ -7,7 +7,17 @@ export function addMonths(base: Date, add: number): Date {
   return new Date(base.getFullYear(), base.getMonth() + add, 1);
 }
 
+function pad2(n: number): string { return n < 10 ? `0${n}` : String(n); }
+
 export function formatYm(d: Date): string {
-  return d.toISOString().slice(0, 7);
+  const y = d.getFullYear();
+  const m = d.getMonth() + 1;
+  return `${y}-${pad2(m)}`;
 }
 
+export function formatYmd(d: Date): string {
+  const y = d.getFullYear();
+  const m = d.getMonth() + 1;
+  const day = d.getDate();
+  return `${y}-${pad2(m)}-${pad2(day)}`;
+}

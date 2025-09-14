@@ -5,6 +5,7 @@ import type { FuturePayment } from "@/types";
 import { fmtMoney } from "@/utils/money";
 
 export function FuturePaymentTable({ futurePayments, onDelete }: { futurePayments: FuturePayment[]; onDelete: (id: string) => void }) {
+  const sorted = [...futurePayments].sort((a, b) => a.dueDate.localeCompare(b.dueDate));
   return (
     <div className="overflow-auto">
       <Table>
@@ -18,14 +19,14 @@ export function FuturePaymentTable({ futurePayments, onDelete }: { futurePayment
           </TableRow>
         </TableHeader>
         <TableBody>
-          {futurePayments.length === 0 && (
+          {sorted.length === 0 && (
             <TableRow>
               <TableCell colSpan={5} className="text-center text-sm text-muted-foreground">
                 No future payments yet.
               </TableCell>
             </TableRow>
           )}
-          {futurePayments.map((d) => (
+          {sorted.map((d) => (
             <TableRow key={d.id}>
               <TableCell>{d.name}</TableCell>
               <TableCell className="text-right">{fmtMoney(d.amount)}</TableCell>
