@@ -28,7 +28,8 @@ export default function App() {
     const earnings = totalInCurrency(store.earnings.map((e) => e.amount), displayCurrency);
     const debts = totalInCurrency(store.debts.map((d) => d.amount), displayCurrency);
     const expenses = totalInCurrency(store.expenses.map((x) => x.amount), displayCurrency);
-    return { earnings, debts, expenses };
+    const balance = { value: (earnings.value || 0) - (expenses.value || 0), currency: displayCurrency } as const;
+    return { earnings, debts, expenses, balance };
   }, [store, displayCurrency]);
 
   // Export/Import
@@ -90,14 +91,24 @@ export default function App() {
         </TabsList>
 
         {/* Summary */}
-        <TabsContent value="summary" className="space-y-4">
-          {/* Converted overview */}
-          <div className="grid md:grid-cols-3 gap-4">
-            <Stat title={`Earnings (${displayCurrency})`} value={fmtMoney(convertedTotals.earnings)} />
-            <Stat title={`Debts (${displayCurrency})`} value={fmtMoney(convertedTotals.debts)} />
-            <Stat title={`Monthly (${displayCurrency})`} value={fmtMoney(convertedTotals.expenses)} />
+        <TabsContent value="summary" className="space-y-6">
+          {/* Monthly values */}
+          <div className="space-y-2">
+            <div className="text-sm font-medium text-muted-foreground">Monthly</div>
+            <div className="grid md:grid-cols-3 gap-4">
+              <Stat title={`Earnings (${displayCurrency})`} value={fmtMoney(convertedTotals.earnings)} />
+              <Stat title={`Expenses (${displayCurrency})`} value={fmtMoney(convertedTotals.expenses)} />
+              <Stat title={`Balance (${displayCurrency})`} value={fmtMoney(convertedTotals.balance)} />
+            </div>
           </div>
 
+          {/* Absolute values */}
+          <div className="space-y-2">
+            <div className="text-sm font-medium text-muted-foreground">Absolute</div>
+            <div className="grid md:grid-cols-3 gap-4">
+              <Stat title={`Debts (${displayCurrency})`} value={fmtMoney(convertedTotals.debts)} />
+            </div>
+          </div>
         </TabsContent>
 
         {/* Debts */}
