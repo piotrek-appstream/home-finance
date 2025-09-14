@@ -16,6 +16,8 @@ import { totalInCurrency } from "@/utils/fx";
 import type { Currency } from "@/types";
 import { ExpenseForm } from "@/components/expenses/ExpenseForm";
 import { ExpenseTable } from "@/components/expenses/ExpenseTable";
+import { SavingForm } from "@/components/savings/SavingForm";
+import { SavingTable } from "@/components/savings/SavingTable";
 
 export default function App() {
   const [store, setStore] = useStore();
@@ -28,8 +30,9 @@ export default function App() {
     const earnings = totalInCurrency(store.earnings.map((e) => e.amount), displayCurrency);
     const debts = totalInCurrency(store.debts.map((d) => d.amount), displayCurrency);
     const expenses = totalInCurrency(store.expenses.map((x) => x.amount), displayCurrency);
+    const savings = totalInCurrency(store.savings.map((s) => s.amount), displayCurrency);
     const balance = { value: (earnings.value || 0) - (expenses.value || 0), currency: displayCurrency } as const;
-    return { earnings, debts, expenses, balance };
+    return { earnings, debts, expenses, savings, balance };
   }, [store, displayCurrency]);
 
   // Export/Import
@@ -83,9 +86,10 @@ export default function App() {
       </header>
 
       <Tabs value={tab} onValueChange={setTab}>
-        <TabsList className="grid grid-cols-4 w-full md:w-auto">
+        <TabsList className="grid grid-cols-5 w-full md:w-auto">
           <TabsTrigger value="summary">Summary</TabsTrigger>
           <TabsTrigger value="debts">Debts</TabsTrigger>
+          <TabsTrigger value="savings">Savings</TabsTrigger>
           <TabsTrigger value="earnings">Earnings</TabsTrigger>
           <TabsTrigger value="expenses">Expenses</TabsTrigger>
         </TabsList>
@@ -106,6 +110,7 @@ export default function App() {
           <div className="space-y-2">
             <div className="text-sm font-medium text-muted-foreground">Absolute</div>
             <div className="grid md:grid-cols-3 gap-4">
+              <Stat title={`Savings (${displayCurrency})`} value={fmtMoney(convertedTotals.savings)} />
               <Stat title={`Debts (${displayCurrency})`} value={fmtMoney(convertedTotals.debts)} />
             </div>
           </div>
@@ -144,6 +149,24 @@ export default function App() {
             <CardContent>
               <EarningTable earnings={store.earnings}
                 onDelete={(id) => setStore({ ...store, earnings: store.earnings.filter((x) => x.id !== id) })} />
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Savings */}
+        <TabsContent value="savings" className="space-y-4">
+          <Card>
+            <CardHeader><CardTitle>Add Saving</CardTitle></CardHeader>
+            <CardContent className="space-y-3">
+              <SavingForm onAdd={(s) => setStore({ ...store, savings: [s, ...store.savings] })} />
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader><CardTitle>All Savings</CardTitle></CardHeader>
+            <CardContent>
+              <SavingTable savings={store.savings}
+                onDelete={(id) => setStore({ ...store, savings: store.savings.filter((x) => x.id !== id) })} />
             </CardContent>
           </Card>
         </TabsContent>

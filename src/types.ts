@@ -28,4 +28,11 @@ export type StoreState = {
   debts: Debt[];
   earnings: Earning[];
   expenses: RecurringExpense[];
+  savings: Saving[];
+};
+
+export type Saving = {
+  id: string;
+  name: string;         // e.g., Cash, Bank, Investment
+  amount: Money;
 };
