@@ -1,6 +1,6 @@
 import type { Currency, Money, Plan, StoreState } from "@/types";
 import { convertMoney, FX_RATES_PLN, totalInCurrency } from "@/utils/fx";
-import { addMonths as addMonthsDate } from "@/utils/date";
+import { addMonths as addMonthsDate, monthsBetween } from "@/utils/date";
 
 export type FuturePaymentSim = {
   id: string;
@@ -24,6 +24,7 @@ export function simulatePlan(
   store: StoreState,
   plan: Plan,
   displayCurrency: Currency,
+  horizonMonths: number = 60,
 ): PlanSimResult {
   const rates = FX_RATES_PLN;
 
@@ -40,12 +41,14 @@ export function simulatePlan(
     .filter((s) => plan.seedSavingsIds.includes(s.id))
     .reduce((sum, s) => sum + convertMoney(s.amount, displayCurrency, rates).value, 0);
 
-  // Prepare future payments sorted by priority
-  const futurePayments = [...store.futurePayments].sort((a, b) => {
+  // Expand recurring future payments within the horizon and sort by priority
+  const now = new Date();
+  const expanded = expandFuturePayments(store, horizonMonths);
+  const futurePayments = expanded.sort((a, b) => {
     if (plan.priority === "amount") return (a.amount.value * rates[a.amount.currency]) - (b.amount.value * rates[b.amount.currency]);
     if (plan.priority === "custom" && plan.customFuturePaymentOrder && plan.customFuturePaymentOrder.length) {
-      const ia = plan.customFuturePaymentOrder.indexOf(a.id);
-      const ib = plan.customFuturePaymentOrder.indexOf(b.id);
+      const ia = plan.customFuturePaymentOrder.indexOf(a.id.split("#")[0]);
+      const ib = plan.customFuturePaymentOrder.indexOf(b.id.split("#")[0]);
       if (ia !== -1 && ib !== -1) return ia - ib;
     }
     // default: by due date
@@ -60,7 +63,6 @@ export function simulatePlan(
   });
 
   // Current month basis
-  const now = new Date();
   const startYear = now.getFullYear();
   const startMonth = now.getMonth(); // 0-based
 
@@ -114,4 +116,35 @@ export function simulatePlan(
 
   const onTimeCount = results.filter((r) => r.onTime).length;
   return { monthlyBudget, remainingAfterAlloc, futurePayments: results, onTimeCount, totalFuturePayments: results.length };
+}
+
+// Expand recurring items into concrete due dates within the given horizon from now.
+function expandFuturePayments(store: StoreState, horizonMonths: number) {
+  const now = new Date();
+  const items = [] as { id: string; name: string; amount: Money; dueDate: string }[];
+  for (const d of store.futurePayments) {
+    const recur = d.recurrence ?? "once";
+    if (recur === "once") {
+      const diff = monthsBetween(now, d.dueDate);
+      if (diff >= 0 && diff <= horizonMonths) items.push({ id: d.id, name: d.name, amount: d.amount, dueDate: d.dueDate });
+      continue;
+    }
+    if (recur === "yearly") {
+      const parts = d.dueDate.split("-").map(Number);
+      const m0 = parts[1];
+      const day = parts[2];
+      const startYear = now.getFullYear();
+      const years = Math.ceil(horizonMonths / 12) + 1;
+      for (let k = -1; k <= years; k++) {
+        const y = startYear + k;
+        const dt = new Date(y, m0 - 1, day);
+        const iso = dt.toISOString().slice(0, 10);
+        const diff = monthsBetween(now, iso);
+        if (diff >= 0 && diff <= horizonMonths) {
+          items.push({ id: `${d.id}#${iso.slice(0,7)}`, name: d.name, amount: d.amount, dueDate: iso });
+        }
+      }
+    }
+  }
+  return items;
 }

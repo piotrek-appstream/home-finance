@@ -3,11 +3,39 @@ import type { Currency, StoreState } from "@/types";
 import { totalInCurrency } from "@/utils/fx";
 import { fmtMoney } from "@/utils/money";
 import { Stat } from "@/components/Stat";
+import { monthsBetween } from "@/utils/date";
 
 export function SummaryTab({ store, displayCurrency }: { store: StoreState; displayCurrency: Currency }) {
   const totals = useMemo(() => {
     const earnings = totalInCurrency(store.earnings.map((e) => e.amount), displayCurrency);
-    const futurePayments = totalInCurrency(store.futurePayments.map((d) => d.amount), displayCurrency);
+    // Sum of payments due in the next 12 months (including recurring yearly)
+    const now = new Date();
+    const upcoming = [] as typeof store.futurePayments;
+    for (const d of store.futurePayments) {
+      const recur = d.recurrence ?? "once";
+      if (recur === "once") {
+        const diff = monthsBetween(now, d.dueDate);
+        if (diff >= 0 && diff <= 12) upcoming.push(d);
+        continue;
+      }
+      if (recur === "yearly") {
+        const parts = d.dueDate.split("-").map(Number);
+        const m0 = parts[1];
+        const day = parts[2];
+        const startYear = now.getFullYear();
+        const years = Math.ceil(12 / 12) + 1;
+        for (let k = -1; k <= years; k++) {
+          const y = startYear + k;
+          const dt = new Date(y, m0 - 1, day);
+          const iso = dt.toISOString().slice(0, 10);
+          const diff = monthsBetween(now, iso);
+          if (diff >= 0 && diff <= 12) {
+            upcoming.push({ ...d, dueDate: iso });
+          }
+        }
+      }
+    }
+    const futurePayments = totalInCurrency(upcoming.map((d) => d.amount), displayCurrency);
     const expenses = totalInCurrency(store.expenses.map((x) => x.amount), displayCurrency);
     const savings = totalInCurrency(store.savings.map((s) => s.amount), displayCurrency);
     const balance = { value: (earnings.value || 0) - (expenses.value || 0), currency: displayCurrency } as const;
@@ -29,10 +57,9 @@ export function SummaryTab({ store, displayCurrency }: { store: StoreState; disp
         <div className="text-sm font-medium text-muted-foreground">Absolute</div>
         <div className="grid md:grid-cols-3 gap-4">
           <Stat title={`Savings (${displayCurrency})`} value={fmtMoney(totals.savings)} />
-          <Stat title={`Future Payments (${displayCurrency})`} value={fmtMoney(totals.futurePayments)} />
+          <Stat title={`Payments Due (12m) (${displayCurrency})`} value={fmtMoney(totals.futurePayments)} />
         </div>
       </div>
     </div>
   );
 }
-

@@ -10,6 +10,8 @@ export type FuturePayment = {
   name: string;
   amount: Money;
   dueDate: string;      // ISO yyyy-mm-dd
+  // Recurrence pattern: undefined or "once" = one-time; "yearly" = repeats every year on the same date
+  recurrence?: "once" | "yearly";
 };
 
 export type Earning = {

@@ -52,7 +52,7 @@ export default function App() {
             <TabsTrigger className="flex-none" value="future-payments">Future Payments</TabsTrigger>
             <TabsTrigger className="flex-none" value="savings">Savings</TabsTrigger>
             <TabsTrigger className="flex-none" value="earnings">Earnings</TabsTrigger>
-            <TabsTrigger className="flex-none" value="expenses">Expenses</TabsTrigger>
+            <TabsTrigger className="flex-none" value="expenses">Monthly Expenses</TabsTrigger>
           </TabsList>
         </div>
 

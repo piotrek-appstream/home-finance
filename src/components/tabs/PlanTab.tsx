@@ -20,7 +20,7 @@ export function PlanTab({
   horizonMonths: number;
   setHorizonMonths: (n: number) => void;
 }) {
-  const planSim = useMemo(() => simulatePlan(store, store.plan, displayCurrency), [store, displayCurrency]);
+  const planSim = useMemo(() => simulatePlan(store, store.plan, displayCurrency, horizonMonths), [store, displayCurrency, horizonMonths]);
 
   return (
     <div className="space-y-4">
