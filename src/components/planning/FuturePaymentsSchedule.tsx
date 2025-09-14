@@ -1,15 +1,15 @@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import type { DebtSim } from "@/utils/planning";
+import type { FuturePaymentSim } from "@/utils/planning";
 import { Badge } from "@/components/ui/badge";
 import { fmtMoney } from "@/utils/money";
 
-export function DebtsSchedule({ debts }: { debts: DebtSim[] }) {
+export function FuturePaymentsSchedule({ futurePayments }: { futurePayments: FuturePaymentSim[] }) {
   return (
     <div className="overflow-auto">
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Debt</TableHead>
+            <TableHead>Future Payment</TableHead>
             <TableHead>Due</TableHead>
             <TableHead>Amount</TableHead>
             <TableHead>Funded By</TableHead>
@@ -17,12 +17,12 @@ export function DebtsSchedule({ debts }: { debts: DebtSim[] }) {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {debts.length === 0 && (
+          {futurePayments.length === 0 && (
             <TableRow>
-              <TableCell colSpan={5} className="text-center text-sm text-muted-foreground">No debts.</TableCell>
+              <TableCell colSpan={5} className="text-center text-sm text-muted-foreground">No future payments.</TableCell>
             </TableRow>
           )}
-          {debts.map((d) => (
+          {futurePayments.map((d) => (
             <TableRow key={d.id}>
               <TableCell className="whitespace-nowrap">{d.name}</TableCell>
               <TableCell className="whitespace-nowrap">{d.dueDate}</TableCell>

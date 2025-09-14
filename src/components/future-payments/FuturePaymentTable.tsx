@@ -1,10 +1,10 @@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Trash2 } from "lucide-react";
-import type { Debt } from "@/types";
+import type { FuturePayment } from "@/types";
 import { fmtMoney } from "@/utils/money";
 
-export function DebtTable({ debts, onDelete }: { debts: Debt[]; onDelete: (id: string) => void }) {
+export function FuturePaymentTable({ futurePayments, onDelete }: { futurePayments: FuturePayment[]; onDelete: (id: string) => void }) {
   return (
     <div className="overflow-auto">
       <Table>
@@ -17,14 +17,14 @@ export function DebtTable({ debts, onDelete }: { debts: Debt[]; onDelete: (id: s
           </TableRow>
         </TableHeader>
         <TableBody>
-          {debts.length === 0 && (
+          {futurePayments.length === 0 && (
             <TableRow>
               <TableCell colSpan={4} className="text-center text-sm text-muted-foreground">
-                No debts yet.
+                No future payments yet.
               </TableCell>
             </TableRow>
           )}
-          {debts.map((d) => (
+          {futurePayments.map((d) => (
             <TableRow key={d.id}>
               <TableCell>{d.name}</TableCell>
               <TableCell className="text-right">{fmtMoney(d.amount)}</TableCell>

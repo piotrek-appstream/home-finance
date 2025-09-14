@@ -3,12 +3,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
 import { Download, Upload } from "lucide-react";
 
 import { useStore } from "@/hooks/useStore";
 import { Stat } from "@/components/Stat";
-import { DebtForm } from "@/components/debts/DebtForm";
-import { DebtTable } from "@/components/debts/DebtTable";
+import { FuturePaymentForm } from "@/components/future-payments/FuturePaymentForm";
+import { FuturePaymentTable } from "@/components/future-payments/FuturePaymentTable";
 import { EarningForm } from "@/components/earnings/EarningForm";
 import { EarningTable } from "@/components/earnings/EarningTable";
 import { fmtMoney, CURRENCIES } from "@/utils/money";
@@ -19,23 +20,25 @@ import { ExpenseTable } from "@/components/expenses/ExpenseTable";
 import { SavingForm } from "@/components/savings/SavingForm";
 import { SavingTable } from "@/components/savings/SavingTable";
 import { PlanInputs } from "@/components/planning/PlanInputs";
-import { DebtsSchedule } from "@/components/planning/DebtsSchedule";
+import { FuturePaymentsSchedule } from "@/components/planning/FuturePaymentsSchedule";
+import { PlanFundingVsRequiredChart } from "@/components/planning/PlanFundingVsRequiredChart";
 import { simulatePlan } from "@/utils/planning";
 
 export default function App() {
   const [store, setStore] = useStore();
   const [tab, setTab] = useState("summary");
   const [displayCurrency, setDisplayCurrency] = useState<Currency>("PLN");
+  const [horizonMonths, setHorizonMonths] = useState<number>(24);
   const fileRef = useRef<HTMLInputElement>(null);
 
   // Totals converted into the display currency
   const convertedTotals = useMemo(() => {
     const earnings = totalInCurrency(store.earnings.map((e) => e.amount), displayCurrency);
-    const debts = totalInCurrency(store.debts.map((d) => d.amount), displayCurrency);
+    const futurePayments = totalInCurrency(store.futurePayments.map((d) => d.amount), displayCurrency);
     const expenses = totalInCurrency(store.expenses.map((x) => x.amount), displayCurrency);
     const savings = totalInCurrency(store.savings.map((s) => s.amount), displayCurrency);
     const balance = { value: (earnings.value || 0) - (expenses.value || 0), currency: displayCurrency } as const;
-    return { earnings, debts, expenses, savings, balance };
+    return { earnings, futurePayments, expenses, savings, balance };
   }, [store, displayCurrency]);
 
   const planSim = useMemo(() => simulatePlan(store, store.plan, displayCurrency), [store, displayCurrency]);
@@ -94,7 +97,7 @@ export default function App() {
         <TabsList className="grid grid-cols-6 w-full md:w-auto">
           <TabsTrigger value="summary">Summary</TabsTrigger>
           <TabsTrigger value="plan">Plan</TabsTrigger>
-          <TabsTrigger value="debts">Debts</TabsTrigger>
+          <TabsTrigger value="future-payments">Future Payments</TabsTrigger>
           <TabsTrigger value="savings">Savings</TabsTrigger>
           <TabsTrigger value="earnings">Earnings</TabsTrigger>
           <TabsTrigger value="expenses">Expenses</TabsTrigger>
@@ -117,7 +120,7 @@ export default function App() {
             <div className="text-sm font-medium text-muted-foreground">Absolute</div>
             <div className="grid md:grid-cols-3 gap-4">
               <Stat title={`Savings (${displayCurrency})`} value={fmtMoney(convertedTotals.savings)} />
-              <Stat title={`Debts (${displayCurrency})`} value={fmtMoney(convertedTotals.debts)} />
+              <Stat title={`Future Payments (${displayCurrency})`} value={fmtMoney(convertedTotals.futurePayments)} />
             </div>
           </div>
         </TabsContent>
@@ -130,32 +133,50 @@ export default function App() {
             <CardHeader>
               <CardTitle>Simulation</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-3">
-              <div className="text-sm text-muted-foreground">
-                On-time debts: {planSim.onTimeCount}/{planSim.totalDebts}
+            <CardContent className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div className="text-sm text-muted-foreground">
+                  On-time future payments: {planSim.onTimeCount}/{planSim.totalFuturePayments}
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-sm text-muted-foreground">Horizon (months)</span>
+                  <Input
+                    type="number"
+                    inputMode="numeric"
+                    min={1}
+                    step={1}
+                    value={horizonMonths}
+                    onChange={(e) => {
+                      const v = Math.max(1, Number(e.target.value || 0));
+                      setHorizonMonths(v);
+                    }}
+                    className="w-[100px]"
+                  />
+                </div>
               </div>
-              <DebtsSchedule debts={planSim.debts} />
+              <PlanFundingVsRequiredChart state={store} planSim={planSim} displayCurrency={displayCurrency} horizonMonths={horizonMonths} />
+              <FuturePaymentsSchedule futurePayments={planSim.futurePayments} />
             </CardContent>
           </Card>
 
           {/* SavingsProjection removed as savings input is scrapped from Plan */}
         </TabsContent>
 
-        {/* Debts */}
-        <TabsContent value="debts" className="space-y-4">
+        {/* Future Payments */}
+        <TabsContent value="future-payments" className="space-y-4">
           <Card>
-            <CardHeader><CardTitle>Add Debt</CardTitle></CardHeader>
+            <CardHeader><CardTitle>Add Future Payment</CardTitle></CardHeader>
             <CardContent className="space-y-3">
-              <DebtForm onAdd={(d) => setStore({ ...store, debts: [d, ...store.debts] })} />
+              <FuturePaymentForm onAdd={(d) => setStore({ ...store, futurePayments: [d, ...store.futurePayments] })} />
             </CardContent>
           </Card>
 
           <Card>
-            <CardHeader><CardTitle>All Debts</CardTitle></CardHeader>
+            <CardHeader><CardTitle>All Future Payments</CardTitle></CardHeader>
             <CardContent>
               {/* (Optional) Could show a converted column here too */}
-              <DebtTable debts={store.debts}
-                onDelete={(id) => setStore({ ...store, debts: store.debts.filter((x) => x.id !== id) })} />
+              <FuturePaymentTable futurePayments={store.futurePayments}
+                onDelete={(id) => setStore({ ...store, futurePayments: store.futurePayments.filter((x) => x.id !== id) })} />
             </CardContent>
           </Card>
         </TabsContent>

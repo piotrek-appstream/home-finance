@@ -19,11 +19,11 @@ export function PlanInputs({ state, onChange, displayCurrency }: { state: StoreS
       <CardHeader><CardTitle>Plan Inputs</CardTitle></CardHeader>
       <CardContent className="space-y-4">
         <div className="space-y-3">
-          <Label className="text-sm">Debt Set-Aside (per month)</Label>
+          <Label className="text-sm">Future Payment Set-Aside (per month)</Label>
           <div className="flex gap-2">
-            <Input type="number" inputMode="decimal" value={plan.debtPerMonth.value}
-              onChange={(e) => onChange({ ...plan, debtPerMonth: { ...plan.debtPerMonth, value: Number(e.target.value) } })} />
-            <Select value={plan.debtPerMonth.currency} onValueChange={(v) => onChange({ ...plan, debtPerMonth: { ...plan.debtPerMonth, currency: v as Currency } })}>
+            <Input type="number" inputMode="decimal" value={plan.futurePaymentPerMonth.value}
+              onChange={(e) => onChange({ ...plan, futurePaymentPerMonth: { ...plan.futurePaymentPerMonth, value: Number(e.target.value) } })} />
+            <Select value={plan.futurePaymentPerMonth.currency} onValueChange={(v) => onChange({ ...plan, futurePaymentPerMonth: { ...plan.futurePaymentPerMonth, currency: v as Currency } })}>
               <SelectTrigger className="w-[120px]"><SelectValue /></SelectTrigger>
               <SelectContent>
                 {CURRENCIES.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
@@ -44,7 +44,7 @@ export function PlanInputs({ state, onChange, displayCurrency }: { state: StoreS
         </Field>
 
         <div className="space-y-2">
-          <Label className="text-sm">Use Savings as Seed for Debts</Label>
+          <Label className="text-sm">Use Savings as Seed for Future Payments</Label>
           <div className="grid md:grid-cols-2 gap-2">
             {state.savings.map((s) => (
               <label key={s.id} className="flex items-center gap-2 p-2 rounded border">
@@ -66,7 +66,7 @@ export function PlanInputs({ state, onChange, displayCurrency }: { state: StoreS
 
         <div className="grid md:grid-cols-3 gap-4">
           <SummaryItem label="Monthly Budget" value={fmtMoney(sim.monthlyBudget)} />
-          <SummaryItem label="Allocated (Debt)" value={`${fmtMoney({ ...sim.monthlyBudget, value: sim.monthlyBudget.value - sim.remainingAfterAlloc.value })}`} />
+          <SummaryItem label="Allocated (Future Payments)" value={`${fmtMoney({ ...sim.monthlyBudget, value: sim.monthlyBudget.value - sim.remainingAfterAlloc.value })}`} />
           <SummaryItem label="Remaining" value={fmtMoney(sim.remainingAfterAlloc)} />
         </div>
       </CardContent>

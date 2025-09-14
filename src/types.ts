@@ -5,7 +5,7 @@ export type Money = {
   currency: Currency;   // "PLN" | "USD" | "EUR"
 };
 
-export type Debt = {
+export type FuturePayment = {
   id: string;
   name: string;
   amount: Money;
@@ -25,7 +25,7 @@ export type RecurringExpense = {
 };
 
 export type StoreState = {
-  debts: Debt[];
+  futurePayments: FuturePayment[];
   earnings: Earning[];
   expenses: RecurringExpense[];
   savings: Saving[];
@@ -39,8 +39,8 @@ export type Saving = {
 };
 
 export type Plan = {
-  debtPerMonth: Money;
+  futurePaymentPerMonth: Money;
   priority: "dueDate" | "amount" | "custom";
-  customDebtOrder?: string[];
+  customFuturePaymentOrder?: string[];
   seedSavingsIds: string[]; // which savings to use as seed
 };

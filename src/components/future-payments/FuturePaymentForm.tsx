@@ -3,11 +3,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Field } from "@/components/Field";
-import type { Currency, Debt } from "@/types";
+import type { Currency, FuturePayment } from "@/types";
 import { CURRENCIES, uid } from "@/utils/money";
 import { Plus } from "lucide-react";
 
-export function DebtForm({ onAdd }: { onAdd: (d: Debt) => void }) {
+export function FuturePaymentForm({ onAdd }: { onAdd: (d: FuturePayment) => void }) {
   const [name, setName] = useState("");
   const [value, setValue] = useState<number>(0);
   const [currency, setCurrency] = useState<Currency>("PLN");
