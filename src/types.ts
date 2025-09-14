@@ -18,7 +18,14 @@ export type Earning = {
   amount: Money;
 };
 
+export type RecurringExpense = {
+  id: string;
+  name: string;         // e.g., Rent, Utilities, Groceries
+  amount: Money;
+};
+
 export type StoreState = {
   debts: Debt[];
   earnings: Earning[];
+  expenses: RecurringExpense[];
 };

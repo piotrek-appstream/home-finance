@@ -13,7 +13,9 @@ import { EarningForm } from "@/components/earnings/EarningForm";
 import { EarningTable } from "@/components/earnings/EarningTable";
 import { fmtMoney, CURRENCIES } from "@/utils/money";
 import { totalInCurrency } from "@/utils/fx";
-import type { Currency, Money } from "@/types";
+import type { Currency } from "@/types";
+import { ExpenseForm } from "@/components/expenses/ExpenseForm";
+import { ExpenseTable } from "@/components/expenses/ExpenseTable";
 
 export default function App() {
   const [store, setStore] = useStore();
@@ -25,7 +27,8 @@ export default function App() {
   const convertedTotals = useMemo(() => {
     const earnings = totalInCurrency(store.earnings.map((e) => e.amount), displayCurrency);
     const debts = totalInCurrency(store.debts.map((d) => d.amount), displayCurrency);
-    return { earnings, debts };
+    const expenses = totalInCurrency(store.expenses.map((x) => x.amount), displayCurrency);
+    return { earnings, debts, expenses };
   }, [store, displayCurrency]);
 
   // Export/Import
@@ -79,18 +82,20 @@ export default function App() {
       </header>
 
       <Tabs value={tab} onValueChange={setTab}>
-        <TabsList className="grid grid-cols-3 w-full md:w-auto">
+        <TabsList className="grid grid-cols-4 w-full md:w-auto">
           <TabsTrigger value="summary">Summary</TabsTrigger>
           <TabsTrigger value="debts">Debts</TabsTrigger>
           <TabsTrigger value="earnings">Earnings</TabsTrigger>
+          <TabsTrigger value="expenses">Expenses</TabsTrigger>
         </TabsList>
 
         {/* Summary */}
         <TabsContent value="summary" className="space-y-4">
           {/* Converted overview */}
-          <div className="grid md:grid-cols-2 gap-4">
+          <div className="grid md:grid-cols-3 gap-4">
             <Stat title={`Earnings (${displayCurrency})`} value={fmtMoney(convertedTotals.earnings)} />
             <Stat title={`Debts (${displayCurrency})`} value={fmtMoney(convertedTotals.debts)} />
+            <Stat title={`Monthly (${displayCurrency})`} value={fmtMoney(convertedTotals.expenses)} />
           </div>
 
         </TabsContent>
@@ -128,6 +133,24 @@ export default function App() {
             <CardContent>
               <EarningTable earnings={store.earnings}
                 onDelete={(id) => setStore({ ...store, earnings: store.earnings.filter((x) => x.id !== id) })} />
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Expenses */}
+        <TabsContent value="expenses" className="space-y-4">
+          <Card>
+            <CardHeader><CardTitle>Add Monthly Expense</CardTitle></CardHeader>
+            <CardContent className="space-y-3">
+              <ExpenseForm onAdd={(e) => setStore({ ...store, expenses: [e, ...store.expenses] })} />
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader><CardTitle>All Monthly Expenses</CardTitle></CardHeader>
+            <CardContent>
+              <ExpenseTable expenses={store.expenses}
+                onDelete={(id) => setStore({ ...store, expenses: store.expenses.filter((x) => x.id !== id) })} />
             </CardContent>
           </Card>
         </TabsContent>
