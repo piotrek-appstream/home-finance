@@ -2,6 +2,7 @@ import { useMemo, useRef, useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Download, Upload } from "lucide-react";
 
 import { useStore } from "@/hooks/useStore";
@@ -10,26 +11,35 @@ import { DebtForm } from "@/components/debts/DebtForm";
 import { DebtTable } from "@/components/debts/DebtTable";
 import { EarningForm } from "@/components/earnings/EarningForm";
 import { EarningTable } from "@/components/earnings/EarningTable";
-import { fmtMoney, sumByCurrency } from "@/utils/money";
-import type { Money } from "@/types";
+import { fmtMoney, sumByCurrency, CURRENCIES } from "@/utils/money";
+import { convertMoney, totalInCurrency } from "@/utils/fx";
+import type { Currency, Money } from "@/types";
 
 export default function App() {
   const [store, setStore] = useStore();
   const [tab, setTab] = useState("summary");
+  const [displayCurrency, setDisplayCurrency] = useState<Currency>("PLN");
   const fileRef = useRef<HTMLInputElement>(null);
 
-  // Totals per currency
-  const totals = useMemo(() => {
+  // Totals per currency (raw, no conversion)
+  const perCurrency = useMemo(() => {
     const earnings = sumByCurrency(store.earnings.map((e) => e.amount));
     const debts = sumByCurrency(store.debts.map((d) => d.amount));
     return { earnings, debts };
   }, [store]);
 
-  // Pretty total string per currency
-  function totalStr(map: Map<any, number>, currency: string): string {
-    const v = map.get(currency as any) || 0;
-    const m: Money = { value: v, currency: currency as any };
-    return fmtMoney(m);
+  // Totals converted into the display currency
+  const convertedTotals = useMemo(() => {
+    const earnings = totalInCurrency(store.earnings.map((e) => e.amount), displayCurrency);
+    const debts = totalInCurrency(store.debts.map((d) => d.amount), displayCurrency);
+    const net: Money = { value: earnings.value - debts.value, currency: displayCurrency };
+    return { earnings, debts, net };
+  }, [store, displayCurrency]);
+
+  // Pretty helper
+  function totalStr(map: Map<any, number>, currency: Currency): string {
+    const v = map.get(currency) || 0;
+    return fmtMoney({ value: v, currency });
   }
 
   // Export/Import
@@ -64,6 +74,14 @@ export default function App() {
       <header className="flex items-center justify-between gap-2">
         <h1 className="text-3xl font-semibold">Household Finance Manager</h1>
         <div className="flex items-center gap-2">
+          {/* Display currency selector (for summaries only) */}
+          <Select value={displayCurrency} onValueChange={(v) => setDisplayCurrency(v as Currency)}>
+            <SelectTrigger className="w-[130px]"><SelectValue placeholder="Currency" /></SelectTrigger>
+            <SelectContent>
+              {CURRENCIES.map((c) => <SelectItem key={c} value={c}>{c} (display)</SelectItem>)}
+            </SelectContent>
+          </Select>
+
           <Button variant="secondary" onClick={doExport} className="gap-2">
             <Download className="h-4 w-4" /> Export
           </Button>
@@ -83,22 +101,23 @@ export default function App() {
 
         {/* Summary */}
         <TabsContent value="summary" className="space-y-4">
+          {/* Converted overview */}
           <div className="grid md:grid-cols-3 gap-4">
-            <Stat title="Earnings (PLN)" value={totalStr(totals.earnings, "PLN")} />
-            <Stat title="Earnings (USD)" value={totalStr(totals.earnings, "USD")} />
-            <Stat title="Earnings (EUR)" value={totalStr(totals.earnings, "EUR")} />
+            <Stat title={`Earnings (${displayCurrency})`} value={fmtMoney(convertedTotals.earnings)} />
+            <Stat title={`Debts (${displayCurrency})`} value={fmtMoney(convertedTotals.debts)} />
+            <Stat title={`Net (${displayCurrency})`} value={fmtMoney(convertedTotals.net)} />
           </div>
 
-          <div className="grid md:grid-cols-3 gap-4">
-            <Stat title="Debts (PLN)" value={totalStr(totals.debts, "PLN")} />
-            <Stat title="Debts (USD)" value={totalStr(totals.debts, "USD")} />
-            <Stat title="Debts (EUR)" value={totalStr(totals.debts, "EUR")} />
-          </div>
-
+          {/* Raw per-currency totals (no FX) */}
           <Card>
-            <CardHeader><CardTitle>Upcoming Debts</CardTitle></CardHeader>
-            <CardContent className="text-sm text-muted-foreground">
-              Manage details in the Debts tab.
+            <CardHeader><CardTitle>Per-currency totals (raw)</CardTitle></CardHeader>
+            <CardContent className="grid md:grid-cols-3 gap-4">
+              <Stat title="Earnings (PLN)" value={totalStr(perCurrency.earnings, "PLN")} />
+              <Stat title="Earnings (USD)" value={totalStr(perCurrency.earnings, "USD")} />
+              <Stat title="Earnings (EUR)" value={totalStr(perCurrency.earnings, "EUR")} />
+              <Stat title="Debts (PLN)" value={totalStr(perCurrency.debts, "PLN")} />
+              <Stat title="Debts (USD)" value={totalStr(perCurrency.debts, "USD")} />
+              <Stat title="Debts (EUR)" value={totalStr(perCurrency.debts, "EUR")} />
             </CardContent>
           </Card>
         </TabsContent>
@@ -115,6 +134,7 @@ export default function App() {
           <Card>
             <CardHeader><CardTitle>All Debts</CardTitle></CardHeader>
             <CardContent>
+              {/* (Optional) Could show a converted column here too */}
               <DebtTable debts={store.debts}
                 onDelete={(id) => setStore({ ...store, debts: store.debts.filter((x) => x.id !== id) })} />
             </CardContent>
