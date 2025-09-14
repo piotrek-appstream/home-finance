@@ -18,6 +18,9 @@ import { ExpenseForm } from "@/components/expenses/ExpenseForm";
 import { ExpenseTable } from "@/components/expenses/ExpenseTable";
 import { SavingForm } from "@/components/savings/SavingForm";
 import { SavingTable } from "@/components/savings/SavingTable";
+import { PlanInputs } from "@/components/planning/PlanInputs";
+import { DebtsSchedule } from "@/components/planning/DebtsSchedule";
+import { simulatePlan } from "@/utils/planning";
 
 export default function App() {
   const [store, setStore] = useStore();
@@ -34,6 +37,8 @@ export default function App() {
     const balance = { value: (earnings.value || 0) - (expenses.value || 0), currency: displayCurrency } as const;
     return { earnings, debts, expenses, savings, balance };
   }, [store, displayCurrency]);
+
+  const planSim = useMemo(() => simulatePlan(store, store.plan, displayCurrency), [store, displayCurrency]);
 
   // Export/Import
   const doExport = () => {
@@ -86,8 +91,9 @@ export default function App() {
       </header>
 
       <Tabs value={tab} onValueChange={setTab}>
-        <TabsList className="grid grid-cols-5 w-full md:w-auto">
+        <TabsList className="grid grid-cols-6 w-full md:w-auto">
           <TabsTrigger value="summary">Summary</TabsTrigger>
+          <TabsTrigger value="plan">Plan</TabsTrigger>
           <TabsTrigger value="debts">Debts</TabsTrigger>
           <TabsTrigger value="savings">Savings</TabsTrigger>
           <TabsTrigger value="earnings">Earnings</TabsTrigger>
@@ -114,6 +120,25 @@ export default function App() {
               <Stat title={`Debts (${displayCurrency})`} value={fmtMoney(convertedTotals.debts)} />
             </div>
           </div>
+        </TabsContent>
+
+        {/* Plan */}
+        <TabsContent value="plan" className="space-y-4">
+          <PlanInputs state={store} displayCurrency={displayCurrency} onChange={(plan) => setStore({ ...store, plan })} />
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Simulation</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <div className="text-sm text-muted-foreground">
+                On-time debts: {planSim.onTimeCount}/{planSim.totalDebts}
+              </div>
+              <DebtsSchedule debts={planSim.debts} />
+            </CardContent>
+          </Card>
+
+          {/* SavingsProjection removed as savings input is scrapped from Plan */}
         </TabsContent>
 
         {/* Debts */}

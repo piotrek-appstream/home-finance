@@ -29,10 +29,18 @@ export type StoreState = {
   earnings: Earning[];
   expenses: RecurringExpense[];
   savings: Saving[];
+  plan: Plan;
 };
 
 export type Saving = {
   id: string;
   name: string;         // e.g., Cash, Bank, Investment
   amount: Money;
+};
+
+export type Plan = {
+  debtPerMonth: Money;
+  priority: "dueDate" | "amount" | "custom";
+  customDebtOrder?: string[];
+  seedSavingsIds: string[]; // which savings to use as seed
 };
