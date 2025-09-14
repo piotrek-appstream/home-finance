@@ -2,6 +2,7 @@ import { ResponsiveContainer, ComposedChart, XAxis, YAxis, Tooltip, Legend, Line
 import type { Currency, StoreState } from "@/types";
 import type { PlanSimResult } from "@/utils/planning";
 import { totalInCurrency } from "@/utils/fx";
+import { monthsBetween, addMonths, formatYm } from "@/utils/date";
 
 export function PlanFundingVsRequiredChart({ state, planSim, displayCurrency, horizonMonths }: { state: StoreState; planSim: PlanSimResult; displayCurrency: Currency; horizonMonths?: number }) {
   const now = new Date();
@@ -47,16 +48,6 @@ export function PlanFundingVsRequiredChart({ state, planSim, displayCurrency, ho
   );
 }
 
-function monthsBetween(base: Date, dateIso: string): number {
-  const [y, m] = dateIso.slice(0, 7).split("-").map(Number);
-  return (y - base.getFullYear()) * 12 + (m - 1 - base.getMonth());
-}
-function addMonths(base: Date, add: number): Date {
-  return new Date(base.getFullYear(), base.getMonth() + add, 1);
-}
-function formatYm(d: Date): string {
-  return d.toISOString().slice(0, 7);
-}
 function round(n: number) { return Math.round((n + Number.EPSILON) * 100) / 100; }
 function formatValue(v: any, currency: Currency) {
   const n = Number(v) || 0;

@@ -1,5 +1,6 @@
 import type { Currency, Money, Plan, StoreState } from "@/types";
 import { convertMoney, FX_RATES_PLN, totalInCurrency } from "@/utils/fx";
+import { addMonths as addMonthsDate } from "@/utils/date";
 
 export type FuturePaymentSim = {
   id: string;
@@ -65,7 +66,7 @@ export function simulatePlan(
 
   function addMonths(ym: { y: number; m0: number }, add: number): string {
     const d = new Date(ym.y, ym.m0 + add, 1);
-    return d.toISOString().slice(0, 7);
+    return addMonthsDate(d, 0).toISOString().slice(0, 7);
   }
 
   function monthsBetweenNow(dateIso: string): number {
