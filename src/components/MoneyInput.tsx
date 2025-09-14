@@ -18,16 +18,15 @@ export function MoneyInput({
   selectClassName?: string;
 }) {
   return (
-    <div className="flex gap-2">
+    <div className="flex flex-wrap gap-2">
       <Input
         type="number"
         inputMode="decimal"
         value={Number.isFinite(value) ? value : 0}
         onChange={(e) => onValueChange(Number(e.target.value))}
-        className={inputClassName ?? "w-full"}
+        className={inputClassName ?? "min-w-0 flex-1"}
       />
-      <CurrencySelect value={currency} onChange={onCurrencyChange} className={selectClassName ?? "w-[120px]"} />
+      <CurrencySelect value={currency} onChange={onCurrencyChange} className={selectClassName ?? "shrink-0 w-[120px]"} />
     </div>
   );
 }
-

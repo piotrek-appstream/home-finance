@@ -44,14 +44,17 @@ export default function App() {
       />
 
       <Tabs value={tab} onValueChange={setTab}>
-        <TabsList className="grid grid-cols-6 w-full md:w-auto">
-          <TabsTrigger value="summary">Summary</TabsTrigger>
-          <TabsTrigger value="plan">Plan</TabsTrigger>
-          <TabsTrigger value="future-payments">Future Payments</TabsTrigger>
-          <TabsTrigger value="savings">Savings</TabsTrigger>
-          <TabsTrigger value="earnings">Earnings</TabsTrigger>
-          <TabsTrigger value="expenses">Expenses</TabsTrigger>
-        </TabsList>
+        {/* Make tabs horizontally scrollable on small screens */}
+        <div className="overflow-x-auto -mx-1 md:mx-0">
+          <TabsList className="min-w-max gap-1">
+            <TabsTrigger className="flex-none" value="summary">Summary</TabsTrigger>
+            <TabsTrigger className="flex-none" value="plan">Plan</TabsTrigger>
+            <TabsTrigger className="flex-none" value="future-payments">Future Payments</TabsTrigger>
+            <TabsTrigger className="flex-none" value="savings">Savings</TabsTrigger>
+            <TabsTrigger className="flex-none" value="earnings">Earnings</TabsTrigger>
+            <TabsTrigger className="flex-none" value="expenses">Expenses</TabsTrigger>
+          </TabsList>
+        </div>
 
         {/* Summary */}
         <TabsContent value="summary">

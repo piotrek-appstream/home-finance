@@ -31,11 +31,11 @@ export function PlanTab({
           <CardTitle>Simulation</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-wrap items-center justify-between gap-2">
             <div className="text-sm text-muted-foreground">
               On-time future payments: {planSim.onTimeCount}/{planSim.totalFuturePayments}
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2">
               <span className="text-sm text-muted-foreground">Horizon (months)</span>
               <Input
                 type="number"
@@ -47,7 +47,7 @@ export function PlanTab({
                   const v = Math.max(1, Number(e.target.value || 0));
                   setHorizonMonths(v);
                 }}
-                className="w-[100px]"
+                className="w-[100px] shrink-0"
               />
             </div>
           </div>
@@ -58,4 +58,3 @@ export function PlanTab({
     </div>
   );
 }
-

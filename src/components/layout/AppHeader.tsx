@@ -15,11 +15,13 @@ export function AppHeader({
   onImport: (s: StoreState) => void;
 }) {
   return (
-    <header className="flex items-center justify-between gap-2">
-      <h1 className="text-3xl font-semibold">Household Finance Manager</h1>
-      <div className="flex items-center gap-2">
+    <header className="flex flex-wrap items-center gap-2">
+      <h1 className="text-2xl md:text-3xl font-semibold flex-1 min-w-0">
+        Household Finance Manager
+      </h1>
+      <div className="flex items-center gap-2 w-full sm:w-auto">
         <ThemeToggle />
-        <CurrencySelect value={displayCurrency} onChange={onDisplayCurrencyChange} className="w-[130px]" />
+        <CurrencySelect value={displayCurrency} onChange={onDisplayCurrencyChange} className="w-[120px] sm:w-[130px]" />
         <ImportExport state={state} onImport={onImport} />
       </div>
     </header>
