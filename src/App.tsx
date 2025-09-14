@@ -11,6 +11,7 @@ import { FuturePaymentsTab } from "@/components/tabs/FuturePaymentsTab";
 import { EarningsTab } from "@/components/tabs/EarningsTab";
 import { SavingsTab } from "@/components/tabs/SavingsTab";
 import { ExpensesTab } from "@/components/tabs/ExpensesTab";
+import { getDemoStore } from "@/lib/demo";
 
 const UI_KEYS = {
   tab: "hh-ui-tab",
@@ -19,7 +20,8 @@ const UI_KEYS = {
 } as const;
 
 export default function App() {
-  const [store, setStore] = useStore();
+  const isDemo = typeof window !== "undefined" && window.location && window.location.pathname.startsWith("/demo");
+  const [store, setStore] = useStore({ initial: isDemo ? getDemoStore() : undefined, persist: !isDemo });
   const [tab, setTab] = useState<string>(() => localStorage.getItem(UI_KEYS.tab) || "summary");
   const [displayCurrency, setDisplayCurrency] = useState<Currency>(() => (localStorage.getItem(UI_KEYS.currency) as Currency) || "PLN");
   const [horizonMonths, setHorizonMonths] = useState<number>(() => {
@@ -94,7 +96,15 @@ export default function App() {
       </Tabs>
 
       <footer className="text-xs text-muted-foreground pt-4">
-        Data is saved in your browser (localStorage). Use Export/Import to sync between devices.
+        {isDemo ? (
+          <span>
+            Demo mode — changes are not saved. Navigate to "/" for your data.
+          </span>
+        ) : (
+          <span>
+            Data is saved in your browser (localStorage). Use Export/Import to sync between devices.
+          </span>
+        )}
       </footer>
     </div>
   );

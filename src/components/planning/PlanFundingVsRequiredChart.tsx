@@ -64,8 +64,8 @@ export function PlanFundingVsRequiredChart({ state, planSim, displayCurrency, ho
             wrapperStyle={{ outline: 'none' }}
           />
           <Legend />
-          <Line type="monotone" dataKey="required" name="Required (cumulative)" stroke="#ef4444" strokeWidth={2} dot={false} />
-          <Line type="monotone" dataKey="available" name="Available (seed + monthly)" stroke="#10b981" strokeWidth={2} dot={false} />
+          <Line type="monotone" dataKey="required" name="Required (cumulative)" stroke="#cc5500" strokeWidth={2} dot={false} />
+          <Line type="monotone" dataKey="available" name="Available (seed + monthly)" stroke="#556B2F" strokeWidth={2} dot={false} />
         </ComposedChart>
       </ResponsiveContainer>
     </div>
