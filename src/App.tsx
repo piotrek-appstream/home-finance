@@ -11,8 +11,8 @@ import { DebtForm } from "@/components/debts/DebtForm";
 import { DebtTable } from "@/components/debts/DebtTable";
 import { EarningForm } from "@/components/earnings/EarningForm";
 import { EarningTable } from "@/components/earnings/EarningTable";
-import { fmtMoney, sumByCurrency, CURRENCIES } from "@/utils/money";
-import { convertMoney, totalInCurrency } from "@/utils/fx";
+import { fmtMoney, CURRENCIES } from "@/utils/money";
+import { totalInCurrency } from "@/utils/fx";
 import type { Currency, Money } from "@/types";
 
 export default function App() {
@@ -21,26 +21,12 @@ export default function App() {
   const [displayCurrency, setDisplayCurrency] = useState<Currency>("PLN");
   const fileRef = useRef<HTMLInputElement>(null);
 
-  // Totals per currency (raw, no conversion)
-  const perCurrency = useMemo(() => {
-    const earnings = sumByCurrency(store.earnings.map((e) => e.amount));
-    const debts = sumByCurrency(store.debts.map((d) => d.amount));
-    return { earnings, debts };
-  }, [store]);
-
   // Totals converted into the display currency
   const convertedTotals = useMemo(() => {
     const earnings = totalInCurrency(store.earnings.map((e) => e.amount), displayCurrency);
     const debts = totalInCurrency(store.debts.map((d) => d.amount), displayCurrency);
-    const net: Money = { value: earnings.value - debts.value, currency: displayCurrency };
-    return { earnings, debts, net };
+    return { earnings, debts };
   }, [store, displayCurrency]);
-
-  // Pretty helper
-  function totalStr(map: Map<any, number>, currency: Currency): string {
-    const v = map.get(currency) || 0;
-    return fmtMoney({ value: v, currency });
-  }
 
   // Export/Import
   const doExport = () => {
@@ -102,24 +88,11 @@ export default function App() {
         {/* Summary */}
         <TabsContent value="summary" className="space-y-4">
           {/* Converted overview */}
-          <div className="grid md:grid-cols-3 gap-4">
+          <div className="grid md:grid-cols-2 gap-4">
             <Stat title={`Earnings (${displayCurrency})`} value={fmtMoney(convertedTotals.earnings)} />
             <Stat title={`Debts (${displayCurrency})`} value={fmtMoney(convertedTotals.debts)} />
-            <Stat title={`Net (${displayCurrency})`} value={fmtMoney(convertedTotals.net)} />
           </div>
 
-          {/* Raw per-currency totals (no FX) */}
-          <Card>
-            <CardHeader><CardTitle>Per-currency totals (raw)</CardTitle></CardHeader>
-            <CardContent className="grid md:grid-cols-3 gap-4">
-              <Stat title="Earnings (PLN)" value={totalStr(perCurrency.earnings, "PLN")} />
-              <Stat title="Earnings (USD)" value={totalStr(perCurrency.earnings, "USD")} />
-              <Stat title="Earnings (EUR)" value={totalStr(perCurrency.earnings, "EUR")} />
-              <Stat title="Debts (PLN)" value={totalStr(perCurrency.debts, "PLN")} />
-              <Stat title="Debts (USD)" value={totalStr(perCurrency.debts, "USD")} />
-              <Stat title="Debts (EUR)" value={totalStr(perCurrency.debts, "EUR")} />
-            </CardContent>
-          </Card>
         </TabsContent>
 
         {/* Debts */}

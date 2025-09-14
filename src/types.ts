@@ -15,7 +15,6 @@ export type Debt = {
 export type Earning = {
   id: string;
   source: string;       // e.g., Salary, Bonus
-  month: string;        // ISO yyyy-mm (type="month")
   amount: Money;
 };
 

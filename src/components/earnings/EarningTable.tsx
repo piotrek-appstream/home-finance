@@ -11,7 +11,6 @@ export function EarningTable({ earnings, onDelete }: { earnings: Earning[]; onDe
         <TableHeader>
           <TableRow>
             <TableHead>Source</TableHead>
-            <TableHead>Month</TableHead>
             <TableHead className="text-right">Amount</TableHead>
             <TableHead className="text-right"></TableHead>
           </TableRow>
@@ -19,7 +18,7 @@ export function EarningTable({ earnings, onDelete }: { earnings: Earning[]; onDe
         <TableBody>
           {earnings.length === 0 && (
             <TableRow>
-              <TableCell colSpan={4} className="text-center text-sm text-muted-foreground">
+              <TableCell colSpan={3} className="text-center text-sm text-muted-foreground">
                 No earnings yet.
               </TableCell>
             </TableRow>
@@ -27,7 +26,6 @@ export function EarningTable({ earnings, onDelete }: { earnings: Earning[]; onDe
           {earnings.map((e) => (
             <TableRow key={e.id}>
               <TableCell>{e.source}</TableCell>
-              <TableCell className="whitespace-nowrap">{e.month}</TableCell>
               <TableCell className="text-right">{fmtMoney(e.amount)}</TableCell>
               <TableCell className="text-right">
                 <Button size="icon" variant="ghost" onClick={() => onDelete(e.id)}>

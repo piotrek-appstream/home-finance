@@ -9,7 +9,6 @@ import { Plus } from "lucide-react";
 
 export function EarningForm({ onAdd }: { onAdd: (e: Earning) => void }) {
   const [source, setSource] = useState("");
-  const [month, setMonth] = useState<string>(new Date().toISOString().slice(0, 7)); // yyyy-mm
   const [value, setValue] = useState<number>(0);
   const [currency, setCurrency] = useState<Currency>("PLN");
 
@@ -17,10 +16,6 @@ export function EarningForm({ onAdd }: { onAdd: (e: Earning) => void }) {
     <div className="space-y-3">
       <Field label="Source">
         <Input placeholder="Salary, Bonus, Rental income..." value={source} onChange={(e) => setSource(e.target.value)} />
-      </Field>
-
-      <Field label="Month">
-        <Input type="month" value={month} onChange={(e) => setMonth(e.target.value)} />
       </Field>
 
       <Field label="Amount">
@@ -38,8 +33,8 @@ export function EarningForm({ onAdd }: { onAdd: (e: Earning) => void }) {
       <Button
         className="gap-2"
         onClick={() => {
-          if (!source || !month || value <= 0) return;
-          onAdd({ id: uid(), source, month, amount: { value, currency } });
+          if (!source || value <= 0) return;
+          onAdd({ id: uid(), source, amount: { value, currency } });
           setSource(""); setValue(0);
         }}
       >
