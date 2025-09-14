@@ -1,0 +1,25 @@
+export type Currency = "PLN" | "USD" | "EUR";
+
+export type Money = {
+  value: number;        // positive number
+  currency: Currency;   // "PLN" | "USD" | "EUR"
+};
+
+export type Debt = {
+  id: string;
+  name: string;
+  amount: Money;
+  dueDate: string;      // ISO yyyy-mm-dd
+};
+
+export type Earning = {
+  id: string;
+  source: string;       // e.g., Salary, Bonus
+  month: string;        // ISO yyyy-mm (type="month")
+  amount: Money;
+};
+
+export type StoreState = {
+  debts: Debt[];
+  earnings: Earning[];
+};
