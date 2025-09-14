@@ -1,6 +1,7 @@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import type { FuturePaymentSim } from "@/utils/planning";
 import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
 import { fmtMoney } from "@/utils/money";
 
 export function FuturePaymentsSchedule({ futurePayments }: { futurePayments: FuturePaymentSim[] }) {
@@ -23,17 +24,17 @@ export function FuturePaymentsSchedule({ futurePayments }: { futurePayments: Fut
             </TableRow>
           )}
           {futurePayments.map((d) => (
-            <TableRow key={d.id}>
+            <TableRow key={d.id} className={cn(!d.id.includes("#") && "font-semibold")}> 
               <TableCell className="whitespace-nowrap">{d.name}</TableCell>
               <TableCell className="whitespace-nowrap">{d.dueDate}</TableCell>
               <TableCell>{fmtMoney(d.amount)}</TableCell>
               <TableCell>{d.fundedBy === null ? `Not fundable` : d.fundedBy}</TableCell>
-              <TableCell>
+              <TableCell className="font-normal">
                 {d.onTime ? (
-                  <Badge variant="secondary">On time</Badge>
+                  <Badge className="font-normal" variant="secondary">On time</Badge>
                 ) : (
                   <div className="flex items-center gap-2">
-                    <Badge variant="destructive">Late</Badge>
+                    <Badge className="font-normal" variant="destructive">Late</Badge>
                     {d.shortfallAtDueDate.value > 0 && (
                       <span className="text-xs text-muted-foreground">Shortfall: {fmtMoney(d.shortfallAtDueDate)}</span>
                     )}
