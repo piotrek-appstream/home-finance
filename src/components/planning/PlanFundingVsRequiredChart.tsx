@@ -35,10 +35,34 @@ export function PlanFundingVsRequiredChart({ state, planSim, displayCurrency, ho
     <div className="w-full" style={{ height: 280 }}>
       <ResponsiveContainer>
         <ComposedChart data={data} margin={{ top: 5, right: 16, bottom: 5, left: 0 }}>
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="ym" interval="preserveStartEnd" tick={{ fontSize: 11 }} />
-          <YAxis tickFormatter={(v) => formatThousands(v)} width={60} />
-          <Tooltip formatter={(v: any) => formatValue(v, displayCurrency)} />
+          <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" />
+          <XAxis
+            dataKey="ym"
+            interval="preserveStartEnd"
+            tick={{ fontSize: 11, fill: 'var(--color-muted-foreground)' }}
+            axisLine={{ stroke: 'var(--color-border)' }}
+            tickLine={{ stroke: 'var(--color-border)' }}
+          />
+          <YAxis
+            tickFormatter={(v) => formatThousands(v)}
+            width={60}
+            tick={{ fill: 'var(--color-muted-foreground)' }}
+            axisLine={{ stroke: 'var(--color-border)' }}
+            tickLine={{ stroke: 'var(--color-border)' }}
+          />
+          <Tooltip
+            formatter={(v: any) => formatValue(v, displayCurrency)}
+            contentStyle={{
+              backgroundColor: 'var(--color-popover)',
+              color: 'var(--color-popover-foreground)',
+              border: '1px solid var(--color-border)',
+              borderRadius: 'var(--radius)',
+              boxShadow: '0 6px 24px rgba(0,0,0,0.12)'
+            }}
+            labelStyle={{ color: 'var(--color-popover-foreground)' }}
+            itemStyle={{ color: 'var(--color-popover-foreground)' }}
+            wrapperStyle={{ outline: 'none' }}
+          />
           <Legend />
           <Line type="monotone" dataKey="required" name="Required (cumulative)" stroke="#ef4444" strokeWidth={2} dot={false} />
           <Line type="monotone" dataKey="available" name="Available (seed + monthly)" stroke="#10b981" strokeWidth={2} dot={false} />

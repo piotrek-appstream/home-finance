@@ -1,5 +1,6 @@
 import { CurrencySelect } from "@/components/CurrencySelect";
 import { ImportExport } from "@/components/ImportExport";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import type { Currency, StoreState } from "@/types";
 
 export function AppHeader({
@@ -17,10 +18,10 @@ export function AppHeader({
     <header className="flex items-center justify-between gap-2">
       <h1 className="text-3xl font-semibold">Household Finance Manager</h1>
       <div className="flex items-center gap-2">
+        <ThemeToggle />
         <CurrencySelect value={displayCurrency} onChange={onDisplayCurrencyChange} className="w-[130px]" />
         <ImportExport state={state} onImport={onImport} />
       </div>
     </header>
   );
 }
-

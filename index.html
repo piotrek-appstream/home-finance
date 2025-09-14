@@ -11,6 +11,29 @@
     <!-- Meta tags for PWA / sharing -->
     <meta name="description" content="Simple browser-based app to track income, expenses, future payments, and savings goals." />
     <meta name="theme-color" content="#ffffff" />
+    <script>
+      // Early theme application: prefer saved theme, otherwise follow system.
+      (function () {
+        try {
+          var KEY = 'hh-ui-theme';
+          var saved = localStorage.getItem(KEY);
+          var d = document.documentElement;
+          var mql = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)');
+          var apply = function (mode) {
+            d.classList.remove('dark', 'light');
+            if (mode === 'dark') d.classList.add('dark');
+            if (mode === 'light') d.classList.add('light');
+            var dark = mode === 'dark' || (mode === 'system' && !!(mql && mql.matches));
+            d.style.colorScheme = dark ? 'dark' : 'light';
+          };
+          var mode = (saved === 'dark' || saved === 'light' || saved === 'system') ? saved : 'system';
+          apply(mode);
+          if (mode === 'system' && mql && mql.addEventListener) {
+            mql.addEventListener('change', function () { apply('system'); });
+          }
+        } catch (_) { /* no-op */ }
+      })();
+    </script>
   </head>
   <body class="bg-background text-foreground">
     <div id="root"></div>

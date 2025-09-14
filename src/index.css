@@ -7,39 +7,141 @@
     "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif,
     "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 
-  /* Colors (light) */
-  --color-background: hsl(0 0% 100%);
-  --color-foreground: hsl(222.2 47.4% 11.2%);
+  /* Zenbones Light (defaults) */
+  --color-background: #F0EDEC;            /* Normal bg */
+  --color-foreground: #2C363C;            /* Normal fg */
 
-  --color-muted: hsl(210 40% 96.1%);
-  --color-muted-foreground: hsl(215.4 16.3% 46.9%);
+  --color-muted: #DAD3CF;                 /* Pmenu bg */
+  --color-muted-foreground: #948985;      /* Comment */
 
-  --color-popover: hsl(0 0% 100%);
-  --color-popover-foreground: hsl(222.2 47.4% 11.2%);
+  --color-popover: #DAD3CF;               /* Popup surface */
+  --color-popover-foreground: #2C363C;
 
-  --color-card: hsl(0 0% 100%);
-  --color-card-foreground: hsl(222.2 47.4% 11.2%);
+  --color-card: #DDD6D3;                  /* Slightly raised */
+  --color-card-foreground: #2C363C;
 
-  --color-border: hsl(214.3 31.8% 91.4%);
-  --color-input: hsl(214.3 31.8% 91.4%);
-  --color-ring: hsl(222.2 84% 4.9%);
+  --color-border: #786D68;                /* FloatBorder */
+  --color-input: #786D68;
+  --color-ring: #944927;                  /* Orange focus ring */
 
-  --color-primary: hsl(222.2 47.4% 11.2%);
-  --color-primary-foreground: hsl(210 40% 98%);
+  --color-primary: #944927;               /* Orange */
+  --color-primary-foreground: #F0EDEC;    /* On orange */
 
-  --color-secondary: hsl(210 40% 96.1%);
-  --color-secondary-foreground: hsl(222.2 47.4% 11.2%);
+  --color-secondary: #E1DCDA;             /* Subtle surface */
+  --color-secondary-foreground: #2C363C;
 
-  --color-accent: hsl(210 40% 96.1%);
-  --color-accent-foreground: hsl(222.2 47.4% 11.2%);
+  /* Subtle orange-tinted hover surfaces */
+  --color-accent: #EFDFDC;                /* Light orange tint */
+  --color-accent-foreground: #2C363C;
 
-  --color-destructive: hsl(0 84.2% 60.2%);
-  --color-destructive-foreground: hsl(0 0% 98%);
+  --color-destructive: #A8334C;           /* Red */
+  --color-destructive-foreground: #F0EDEC;
 
   /* Radii */
   --radius-sm: 0.25rem;
   --radius: 0.5rem;
   --radius-lg: 0.75rem;
+}
+
+/* Respect system color scheme by default */
+:root { color-scheme: light; }
+@media (prefers-color-scheme: dark) {
+  :root { color-scheme: dark; }
+  @theme {
+    /* Zenbones Dark */
+    --color-background: #1C1917;
+    --color-foreground: #B4BDC3;
+
+    --color-muted: #302B29;               /* Pmenu bg */
+    --color-muted-foreground: #6E6763;    /* Comment */
+
+    --color-popover: #302B29;
+    --color-popover-foreground: #B4BDC3;
+
+    --color-card: #25211F;                /* Slightly raised */
+    --color-card-foreground: #B4BDC3;
+
+    --color-border: #837771;              /* FloatBorder */
+    --color-input: #837771;
+    --color-ring: #B77E64;                /* Orange focus ring */
+
+    --color-primary: #B77E64;             /* Orange */
+    --color-primary-foreground: #1C1917;
+
+    --color-secondary: #2B2725;           /* Subtle surface */
+    --color-secondary-foreground: #B4BDC3;
+
+    /* Subtle orange-tinted hover surfaces */
+    --color-accent: #55392C;              /* Dark orange tint */
+    --color-accent-foreground: #B4BDC3;
+
+    --color-destructive: #DE6E7C;         /* Red */
+    --color-destructive-foreground: #1C1917;
+  }
+}
+
+/* Allow forcing dark mode via a .dark class on <html> */
+.light:root { color-scheme: light; }
+:root.dark { color-scheme: dark; }
+.light {
+  /* Force Zenbones Light regardless of OS */
+  --color-background: #F0EDEC;
+  --color-foreground: #2C363C;
+
+  --color-muted: #DAD3CF;
+  --color-muted-foreground: #948985;
+
+  --color-popover: #DAD3CF;
+  --color-popover-foreground: #2C363C;
+
+  --color-card: #DDD6D3;
+  --color-card-foreground: #2C363C;
+
+  --color-border: #786D68;
+  --color-input: #786D68;
+  --color-ring: #944927;
+
+  --color-primary: #944927;
+  --color-primary-foreground: #F0EDEC;
+
+  --color-secondary: #E1DCDA;
+  --color-secondary-foreground: #2C363C;
+
+  --color-accent: #EFDFDC;
+  --color-accent-foreground: #2C363C;
+
+  --color-destructive: #A8334C;
+  --color-destructive-foreground: #F0EDEC;
+}
+.dark {
+  /* Force Zenbones Dark regardless of OS */
+  --color-background: #1C1917;
+  --color-foreground: #B4BDC3;
+
+  --color-muted: #302B29;
+  --color-muted-foreground: #6E6763;
+
+  --color-popover: #302B29;
+  --color-popover-foreground: #B4BDC3;
+
+  --color-card: #25211F;
+  --color-card-foreground: #B4BDC3;
+
+  --color-border: #837771;
+  --color-input: #837771;
+  --color-ring: #B77E64;
+
+  --color-primary: #B77E64;
+  --color-primary-foreground: #1C1917;
+
+  --color-secondary: #2B2725;
+  --color-secondary-foreground: #B4BDC3;
+
+  --color-accent: #55392C;
+  --color-accent-foreground: #B4BDC3;
+
+  --color-destructive: #DE6E7C;
+  --color-destructive-foreground: #1C1917;
 }
 
 /* Base element tweaks */
